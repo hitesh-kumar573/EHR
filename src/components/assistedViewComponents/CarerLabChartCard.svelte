@@ -90,7 +90,7 @@
 	<canvas bind:this={chartCanvas}></canvas>
 
 	<!-- Trend below chart -->
-	<div class="mt-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+	<!-- <div class="mt-2 text-sm font-medium text-gray-700 dark:text-gray-200">
 		Result Trend: <span class="font-semibold">{trend}</span>
-	</div>
+	</div> -->
 </div>

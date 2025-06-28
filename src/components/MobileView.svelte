@@ -873,7 +873,7 @@
 										</h3>
 									</div>
 									<CarerRxInvoiceCard data={responseItem.data} />
-								{:else if responseItem.data?.[0]?.rx_prescription_number}
+								{:else if responseItem.data?.[0]?.prescription_url || responseItem.data?.[0]?.dosage_instruction}
 									<div
 										class="mt-4 mb-2 rounded-lg border border-blue-200 bg-blue-50 p-2 dark:border-blue-700 dark:bg-blue-950"
 									>
