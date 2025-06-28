@@ -344,13 +344,11 @@
 							{
 								id: `bot-${index}`,
 								sender: 'bot',
-								ehrData: [
-									{
-										card_type: result.response_json.card_type,
-										charts: result.response_json.charts,
-										data: result.response_json.data
-									}
-								]
+								ehrData: {
+									card_type: result.response_json.card_type,
+									charts: result.response_json.charts,
+									data: result.response_json.data
+								}
 							}
 						);
 					}
@@ -458,7 +456,7 @@
 		// userId.subscribe((v) => (uid = v))();
 		console.log('uid from send func:', uid);
 
-		const userMsg = { sender: 'user', text: currentUserInput.trim() };
+		const userMsg = { id: `user-${Date.now()}`, sender: 'user', text: currentUserInput.trim() };
 		messages.update((m) => [...m, userMsg]);
 		updateChatTitle(currentActiveChatId, userMsg.text);
 		userInput.set('');
@@ -468,8 +466,8 @@
 				chat.id === currentActiveChatId ? { ...chat, messages: [...chat.messages, userMsg] } : chat
 			)
 		);
-
-		const loadingMsg = { sender: 'bot', type: 'typing' };
+		const loadingId = `loading-${Date.now()}`;
+		const loadingMsg = { id: loadingId, sender: 'bot', type: 'typing' };
 		messages.update((m) => [...m, loadingMsg]);
 		chats.update((c) =>
 			c.map((chat) =>
@@ -531,13 +529,11 @@
 				}
 
 				// Show card data (rx details)
-				const ehrResponse = [
-					{
-						card_type: result.card_type,
-						charts: result.charts,
-						data: result.data
-					}
-				];
+				const ehrResponse = {
+					card_type: result.card_type,
+					charts: result.charts,
+					data: result.data
+				};
 
 				// const cards = ehrResponse?.map((article) => {
 				// 	let finalCardUrl = article?.card_url;
@@ -551,13 +547,24 @@
 				// });
 
 				// const botMsg = { sender: 'bot', text: data.reply || 'Sorry, no response.' };
-				const botMsg = { sender: 'bot', ehrData: ehrResponse || 'Sorry, no response.' };
+				const botMsg = {
+					id: `bot-${Date.now()}`,
+					sender: 'bot',
+					ehrData: ehrResponse || 'Sorry, no response.'
+				};
 
-				messages.update((m) => m.map((msg) => (msg.text === loadingMsg.text ? botMsg : msg)));
+				// messages.update((m) => m.map((msg) => (msg.text === loadingMsg.text ? botMsg : msg)));
+				messages.update((m) => m.map((msg) => (msg.id === loadingId ? botMsg : msg)));
+				// chats.update((c) =>
+				// 	c.map((chat) => ({
+				// 		...chat,
+				// 		messages: chat.messages.map((msg) => (msg.text === loadingMsg.text ? botMsg : msg))
+				// 	}))
+				// );
 				chats.update((c) =>
 					c.map((chat) => ({
 						...chat,
-						messages: chat.messages.map((msg) => (msg.text === loadingMsg.text ? botMsg : msg))
+						messages: chat.messages.map((msg) => (msg.id === loadingId ? botMsg : msg))
 					}))
 				);
 			} else {
@@ -861,10 +868,10 @@
 				bind:this={chatContainer}
 			>
 				{#each $messages as msg}
-					{#if msg.ehrData}
-						{#each msg.ehrData as responseItem}
-							{#if responseItem.card_type === 'carer-rx'}
-								{#if responseItem.data?.[0]?.rx_invoice_number}
+					{#if msg?.ehrData}
+						{#if msg?.ehrData}
+							{#if msg.ehrData?.card_type === 'carer-rx'}
+								{#if msg.ehrData.data?.[0]?.rx_invoice_number}
 									<div
 										class="mt-4 mb-2 rounded-lg border border-blue-200 bg-blue-50 p-2 dark:border-blue-700 dark:bg-blue-950"
 									>
@@ -872,8 +879,8 @@
 											<i class="fas fa-file-invoice text-gray-700 dark:text-gray-200"></i> Rx Invoices
 										</h3>
 									</div>
-									<CarerRxInvoiceCard data={responseItem.data} />
-								{:else if responseItem.data?.[0]?.prescription_url || responseItem.data?.[0]?.dosage_instruction}
+									<CarerRxInvoiceCard data={msg.ehrData?.data} />
+								{:else if msg.ehrData.data?.[0]?.prescription_url || msg.ehrData.data?.[0]?.dosage_instruction}
 									<div
 										class="mt-4 mb-2 rounded-lg border border-blue-200 bg-blue-50 p-2 dark:border-blue-700 dark:bg-blue-950"
 									>
@@ -881,12 +888,12 @@
 											<i class="fas fa-notes-medical text-gray-700 dark:text-gray-200"></i> Rx Prescriptions
 										</h3>
 									</div>
-									<CarerRxPrescriptionCard data={responseItem.data} />
+									<CarerRxPrescriptionCard data={msg.ehrData?.data} />
 								{:else}
 									<p class="text-red-500">⚠️ Unknown rx data structure</p>
 								{/if}
-							{:else if responseItem.card_type === 'carer-lab'}
-								{#if responseItem.charts}
+							{:else if msg.ehrData?.card_type === 'carer-lab'}
+								{#if msg.ehrData?.charts}
 									<!-- 🟦 Lab Chart Card -->
 									<div
 										class="mt-4 mb-2 rounded-lg border border-cyan-200 bg-cyan-50 p-2 dark:border-cyan-700 dark:bg-cyan-950"
@@ -895,8 +902,8 @@
 											📈 Lab Test Chart
 										</h3>
 									</div>
-									<CarerLabChartCard data={responseItem.data} />
-								{:else if responseItem.data?.[0]?.bill_number}
+									<CarerLabChartCard data={msg.ehrData?.data} />
+								{:else if msg.ehrData?.data?.[0]?.bill_number}
 									<div
 										class="mt-4 mb-2 rounded-lg border border-cyan-200 bg-cyan-50 p-2 dark:border-cyan-700 dark:bg-cyan-950"
 									>
@@ -904,8 +911,8 @@
 											<i class="fas fa-file-invoice text-gray-700 dark:text-gray-200"></i> Lab Invoices
 										</h3>
 									</div>
-									<CarerLabInvoiceCard data={responseItem.data} />
-								{:else if responseItem.data?.[0]?.report_number}
+									<CarerLabInvoiceCard data={msg.ehrData?.data} />
+								{:else if msg.ehrData?.data?.[0]?.report_number}
 									<div
 										class="mt-4 mb-2 rounded-lg border border-cyan-200 bg-cyan-50 p-2 dark:border-cyan-700 dark:bg-cyan-950"
 									>
@@ -913,14 +920,14 @@
 											<i class="fas fa-file-medical-alt text-gray-700 dark:text-gray-200"></i> Lab Report
 										</h3>
 									</div>
-									<CarerLabReportCard data={responseItem.data} />
+									<CarerLabReportCard data={msg.ehrData?.data} />
 								{:else}
 									<p class="text-red-500">⚠️ Unknown lab data structure</p>
 								{/if}
 							{:else}
-								<p class="text-red-500">Unknown card type: {responseItem.card_type}</p>
+								<p class="text-red-500">Unknown card type: {msg.ehrData?.card_type}</p>
 							{/if}
-						{/each}
+						{/if}
 					{:else if msg.type === 'typing'}
 						<!-- Typing animation -->
 						<div

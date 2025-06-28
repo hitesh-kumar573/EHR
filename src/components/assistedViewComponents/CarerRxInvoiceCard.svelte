@@ -28,37 +28,49 @@
 <div class="space-y-4">
 	{#each data as item, i}
 		<div class="rounded-lg bg-blue-100 p-3 text-gray-800 shadow-sm dark:bg-blue-200">
-			<p class="flex justify-between">
-				<span class="w-[120px] font-bold">• Rx Invoice:</span>
-				<span class="w-[48vw] truncate overflow-hidden text-right whitespace-nowrap">
-					{item?.rx_invoice_number}
-				</span>
-			</p>
+			{#if item?.rx_invoice_number}
+				<p class="flex justify-between">
+					<span class="w-[120px] font-bold">• Rx Invoice:</span>
+					<span class="w-[48vw] truncate overflow-hidden text-right whitespace-nowrap">
+						{item?.rx_invoice_number}
+					</span>
+				</p>
+			{/if}
 
-			<p class="flex items-center justify-between">
-				<span class="w-[120px] font-bold">• Drug Name:</span>
-				<span class="text-right">{item.rx_drug_name}</span>
-			</p>
+			{#if item.rx_drug_name}
+				<p class="flex items-center justify-between">
+					<span class="w-[120px] font-bold">• Drug Name:</span>
+					<span class="text-right">{item.rx_drug_name}</span>
+				</p>
+			{/if}
 
-			<p class="flex items-center justify-between">
-				<span class="w-[120px] font-bold">• Amount:</span>
-				<span class="text-right">₹{item.rx_invoice_amount}</span>
-			</p>
+			{#if item.rx_invoice_amount}
+				<p class="flex items-center justify-between">
+					<span class="w-[120px] font-bold">• Amount:</span>
+					<span class="text-right">₹{item.rx_invoice_amount}</span>
+				</p>
+			{/if}
 
-			<p class="flex items-center justify-between">
-				<span class="w-[120px] font-bold">• MRP:</span>
-				<span class="text-right">₹{item.rx_drug_mrp}</span>
-			</p>
+			{#if item.rx_drug_mrp}
+				<p class="flex items-center justify-between">
+					<span class="w-[120px] font-bold">• MRP:</span>
+					<span class="text-right">₹{item.rx_drug_mrp}</span>
+				</p>
+			{/if}
 
-			<p class="flex items-center justify-between">
-				<span class="w-[120px] font-bold">• Invoice Date:</span>
-				<span class="text-right">{formatDate(item.rx_invoice_date)}</span>
-			</p>
+			{#if item.rx_invoice_date}
+				<p class="flex items-center justify-between">
+					<span class="w-[120px] font-bold">• Invoice Date:</span>
+					<span class="text-right">{formatDate(item.rx_invoice_date)}</span>
+				</p>
+			{/if}
 
-			<p class="flex items-center justify-between">
-				<span class="w-[120px] font-bold">• Expiry:</span>
-				<span class="text-right">{formatOnlyDate(item.rx_drug_expiry_date)}</span>
-			</p>
+			{#if item.rx_drug_expiry_date}
+				<p class="flex items-center justify-between">
+					<span class="w-[120px] font-bold">• Expiry:</span>
+					<span class="text-right">{formatOnlyDate(item.rx_drug_expiry_date)}</span>
+				</p>
+			{/if}
 
 			{#if item.rx_invoice_link}
 				<div class="mt-2 flex justify-end">

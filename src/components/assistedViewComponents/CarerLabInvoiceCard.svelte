@@ -23,25 +23,34 @@
 <div class="space-y-4">
 	{#each data as item, i}
 		<div class="rounded-lg bg-cyan-100 p-3 text-gray-800 shadow-sm dark:bg-cyan-200">
-			<p class="flex items-center justify-between">
-				<span class="w-[140px] font-bold">• Bill No:</span>
-				<span class="text-right">{item.bill_number}</span>
-			</p>
+			{#if item.bill_number}
+				<p class="flex items-center justify-between">
+					<span class="w-[140px] font-bold">• Bill No:</span>
+					<span class="text-right">{item.bill_number}</span>
+				</p>
+			{/if}
 
-			<p class="flex items-center justify-between">
-				<span class="w-[140px] font-bold">• Total Amount:</span>
-				<span class="text-right">₹{item.total_amount}</span>
-			</p>
+			{#if item.total_amount}
+				<p class="flex items-center justify-between">
+					<span class="w-[140px] font-bold">• Total Amount:</span>
+					<span class="text-right">₹{item.total_amount}</span>
+				</p>
+			{/if}
 
-			<p class="flex items-center justify-between">
-				<span class="w-[140px] font-bold">• Paid Amount:</span>
-				<span class="text-right">₹{item.paid_amount}</span>
-			</p>
+			{#if item.paid_amount}
+				<p class="flex items-center justify-between">
+					<span class="w-[140px] font-bold">• Paid Amount:</span>
+					<span class="text-right">₹{item.paid_amount}</span>
+				</p>
+			{/if}
 
-			<p class="flex items-center justify-between">
-				<span class="w-[140px] font-bold">• Date:</span>
-				<span class="text-right">{formatDateTime(item.bill_generated_date)}</span>
-			</p>
+			{#if item.bill_generated_date}
+				<p class="flex items-center justify-between">
+					<span class="w-[140px] font-bold">• Date:</span>
+					<span class="text-right">{formatDateTime(item.bill_generated_date)}</span>
+				</p>
+			{/if}
+
 			{#if item.data?.invoice_link}
 				<div class="mt-3 flex justify-end">
 					<a
