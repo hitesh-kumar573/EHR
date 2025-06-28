@@ -215,13 +215,17 @@
 
 			console.log('Fetched chats data:', data);
 			// Add messages placeholder for each chat
-			const formattedChats = data.map((chat) => ({
-				id: chat.chat_id,
-				title: chat.title,
-				messages: [] // You can fetch specific chat messages later if needed
-			}));
+			const formattedChats = data
+				.filter((chat) => chat.chat_id !== undefined)
+				.map((chat) => ({
+					id: chat.chat_id,
+					title: chat.title,
+					messages: [] // You can fetch specific chat messages later if needed
+				}));
 
 			chats.set(formattedChats);
+
+			console.log('chats:', $chats);
 			return formattedChats;
 
 			// ✅ Auto-select first chat if any exist
@@ -320,7 +324,7 @@
 				}
 			});
 
-			let parsedMessages;
+			let parsedMessages = [];
 
 			// ⚠️ If chat is new (no messages yet), fallback to default
 			if (!res.ok) {
@@ -331,25 +335,36 @@
 				const data = await res.json();
 				console.log('Fetched chat messages:', data);
 
-				let result = data[0]; // result is an object with user_text + response_json
-
-				if (result && result.response_json && Array.isArray(result.response_json.data)) {
+				// let result = data[0]; // result is an object with user_text + response_json
+				// for (const result of data) {
+				data.forEach((result, index) => {
+					if (result && result.response_json && Array.isArray(result.response_json.data)) {
+						parsedMessages.push(
+							{ id: `user-${index}`, sender: 'user', text: result.user_text },
+							{
+								id: `bot-${index}`,
+								sender: 'bot',
+								ehrData: [
+									{
+										card_type: result.response_json.card_type,
+										charts: result.response_json.charts,
+										data: result.response_json.data
+									}
+								]
+							}
+						);
+					}
+					// else {
+					// 	parsedMessages = [{ sender: 'bot', text: 'No valid data found for this chat.' }];
+					// }
+				});
+				// Fallback if nothing valid parsed
+				if (parsedMessages.length === 0) {
 					parsedMessages = [
-						{ sender: 'user', text: result.user_text },
-						{
-							sender: 'bot',
-							ehrData: [
-								{
-									card_type: result.response_json.card_type,
-									charts: result.response_json.charts,
-									data: result.response_json.data
-								}
-							]
-						}
+						{ id: 'bot-default', sender: 'bot', text: 'No valid data found for this chat.' }
 					];
-				} else {
-					parsedMessages = [{ sender: 'bot', text: 'No valid data found for this chat.' }];
 				}
+				console.log('parsedMessages:', parsedMessages);
 			}
 
 			chats.update((c) =>
@@ -1002,7 +1017,7 @@
 
 						<div class="chat-container max-h-[70vh] overflow-y-auto">
 							<!-- Chat History -->
-							{#each $chats as chat (chat.id)}
+							{#each $chats.filter((c) => c?.id !== undefined) as chat (chat.id)}
 								<div
 									class="my-2 flex items-center justify-between rounded bg-white p-3 shadow-sm dark:bg-gray-700 {chat.id ===
 									$activeChatId
