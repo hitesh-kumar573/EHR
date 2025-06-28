@@ -792,7 +792,9 @@
 						<div
 							class="mb-2 rounded-lg border border-blue-200 bg-blue-50 p-2 dark:border-blue-700 dark:bg-blue-950"
 						>
-							<h3 class="text-base font-semibold text-blue-700 dark:text-blue-300">Rx Invoices</h3>
+							<h3 class="text-base font-semibold text-blue-700 dark:text-blue-300">
+								<i class="fas fa-file-invoice text-gray-700 dark:text-gray-200"></i> Rx Invoices
+							</h3>
 						</div>
 						{#each rxInvoices as item}
 							<RxInvoiceCard {item} />
@@ -805,7 +807,7 @@
 							class="mb-2 rounded-lg border border-blue-200 bg-blue-50 p-2 dark:border-blue-700 dark:bg-blue-950"
 						>
 							<h3 class="text-base font-semibold text-blue-700 dark:text-blue-300">
-								Rx Prescriptions
+								<i class="fas fa-notes-medical text-gray-700 dark:text-gray-200"></i> Rx Prescriptions
 							</h3>
 						</div>
 						{#each rxPrescriptions as item}
@@ -822,7 +824,9 @@
 						<div
 							class="mb-2 rounded-lg border border-cyan-200 bg-cyan-50 p-2 dark:border-cyan-700 dark:bg-cyan-950"
 						>
-							<h3 class="text-base font-semibold text-cyan-700 dark:text-cyan-300">Lab Report</h3>
+							<h3 class="text-base font-semibold text-cyan-700 dark:text-cyan-300">
+								<i class="fas fa-file-medical-alt text-gray-700 dark:text-gray-200"></i> Lab Report
+							</h3>
 						</div>
 						<!-- Lab Reports -->
 						{#each labReports as item}
@@ -834,7 +838,9 @@
 						<div
 							class="mb-2 rounded-lg border border-cyan-200 bg-cyan-50 p-2 dark:border-cyan-700 dark:bg-cyan-950"
 						>
-							<h3 class="text-base font-semibold text-cyan-700 dark:text-cyan-300">Lab Invoices</h3>
+							<h3 class="text-base font-semibold text-cyan-700 dark:text-cyan-300">
+								<i class="fas fa-file-invoice text-gray-700 dark:text-gray-200"></i> Lab Invoices
+							</h3>
 						</div>
 						<!-- Lab Invoices -->
 						{#each labInvoices as item}
