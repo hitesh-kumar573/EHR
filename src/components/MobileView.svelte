@@ -37,6 +37,7 @@
 	import CarerLabInvoiceCard from './assistedViewComponents/CarerLabInvoiceCard.svelte';
 	import CarerLabChartCard from './assistedViewComponents/CarerLabChartCard.svelte';
 	import UserDropdown from './loginComponents/UserDropdown.svelte';
+	import UploadModal from './classicalViewComponents/UploadModal.svelte';
 
 	const baseUrl = import.meta.env.VITE_API_BASE_URL;
 	const baseUrlForCustomQuery = import.meta.env.VITE_API_BASE_URL_FOR_CUSTOM_QUERY;
@@ -216,7 +217,7 @@
 			console.log('Fetched chats data:', data);
 			// Add messages placeholder for each chat
 			const formattedChats = data
-				.filter((chat) => chat.chat_id !== undefined)
+				.filter((chat) => chat.chat_id !== undefined && chat.chat_id !== null)
 				.map((chat) => ({
 					id: chat.chat_id,
 					title: chat.title,
@@ -272,6 +273,10 @@
 
 			const data = await res.json();
 			console.log('Chat created:', data);
+
+			if (!data.chat_id) {
+				throw new Error('Server failed to return chat ID');
+			}
 
 			const newChat = {
 				id: data.chat_id,
@@ -710,6 +715,14 @@
 
 	async function fetchCategoryData(category) {
 		try {
+			// if (!category || !apiMap[category]) {
+			// 	console.warn('❌ Invalid or undefined category passed to fetchCategoryData:', category);
+			// 	return;
+			// }
+
+			console.log('category:', category);
+			console.log('apiMap[category]:', apiMap[category]);
+
 			const res = await fetch(apiMap[category]);
 			const data = await res.json();
 
@@ -731,6 +744,54 @@
 			}
 		} catch (err) {
 			console.error('🚨 Fetch error:', err);
+		}
+	}
+
+	let showUploadModal = false;
+	let currentUploadCategory = '';
+
+	function openUpload(category) {
+		currentUploadCategory = category;
+		showUploadModal = true;
+	}
+
+	function closeUpload() {
+		showUploadModal = false;
+		currentUploadCategory = '';
+	}
+
+	async function refreshAfterUpload(fileObject) {
+		console.log('📤 File ready to upload:', fileObject);
+
+		if (!currentUploadCategory || !fileObject.base64) {
+			console.warn('❌ Missing category or file');
+			return;
+		}
+
+		try {
+			const payload = {
+				base64: fileObject.base64,
+				category: currentUploadCategory,
+				phone
+			};
+
+			console.log('payload:', payload);
+			await fetch(`${baseUrl}/upload_base64`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload)
+			});
+
+			const result = await response.json();
+
+			if (response.ok) {
+				console.log('✅ Upload success:', result);
+				await fetchCategoryData(currentUploadCategory); // Refresh data from backend
+			} else {
+				console.error('❌ Upload failed:', result);
+			}
+		} catch (err) {
+			console.error('🚨 Upload error:', err);
 		}
 	}
 </script>
@@ -799,9 +860,20 @@
 						<div
 							class="mb-2 rounded-lg border border-blue-200 bg-blue-50 p-2 dark:border-blue-700 dark:bg-blue-950"
 						>
-							<h3 class="text-base font-semibold text-blue-700 dark:text-blue-300">
-								<i class="fas fa-file-invoice text-gray-700 dark:text-gray-200"></i> Rx Invoices
-							</h3>
+							<div class="flex items-center justify-between">
+								<h3 class="text-base font-semibold text-blue-700 dark:text-blue-300">
+									<i class="fas fa-file-invoice text-gray-700 dark:text-gray-200"></i> Rx Invoices
+								</h3>
+								{#if selectedSub === 'Rx Invoice'}
+									<button
+										aria-label="upload button"
+										class="rounded bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600"
+										on:click={() => openUpload('Rx Invoice')}
+									>
+										<i class="fas fa-upload"></i>
+									</button>
+								{/if}
+							</div>
 						</div>
 						{#each rxInvoices as item}
 							<RxInvoiceCard {item} />
@@ -813,9 +885,20 @@
 						<div
 							class="mb-2 rounded-lg border border-blue-200 bg-blue-50 p-2 dark:border-blue-700 dark:bg-blue-950"
 						>
-							<h3 class="text-base font-semibold text-blue-700 dark:text-blue-300">
-								<i class="fas fa-notes-medical text-gray-700 dark:text-gray-200"></i> Rx Prescriptions
-							</h3>
+							<div class="flex items-center justify-between">
+								<h3 class="text-base font-semibold text-blue-700 dark:text-blue-300">
+									<i class="fas fa-notes-medical text-gray-700 dark:text-gray-200"></i> Rx Prescriptions
+								</h3>
+								{#if selectedSub === 'Rx Prescription'}
+									<button
+										aria-label="upload button"
+										class="rounded bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600"
+										on:click={() => openUpload('Rx Prescription')}
+									>
+										<i class="fas fa-upload"></i>
+									</button>
+								{/if}
+							</div>
 						</div>
 						{#each rxPrescriptions as item}
 							<RxPrescriptionCard {item} />
@@ -825,16 +908,28 @@
 
 				<!-- LAB SECTION -->
 				{#if labReports.length > 0 || labInvoices.length > 0}
-					<h2 class="mt-4 mb-2 text-lg font-bold text-teal-400">🧪 Lab Records :</h2>
+					<h2 class="mt-4 mb-2 text-lg font-bold text-cyan-400">🧪 Lab Records :</h2>
 
 					{#if labReports.length > 0}
 						<div
 							class="mb-2 rounded-lg border border-cyan-200 bg-cyan-50 p-2 dark:border-cyan-700 dark:bg-cyan-950"
 						>
-							<h3 class="text-base font-semibold text-cyan-700 dark:text-cyan-300">
-								<i class="fas fa-file-medical-alt text-gray-700 dark:text-gray-200"></i> Lab Report
-							</h3>
+							<div class="flex items-center justify-between">
+								<h3 class="text-base font-semibold text-cyan-700 dark:text-cyan-300">
+									<i class="fas fa-file-medical-alt text-gray-700 dark:text-gray-200"></i> Lab Report
+								</h3>
+								{#if selectedSub === 'Lab Report'}
+									<button
+										aria-label="upload button"
+										class="rounded bg-cyan-500 px-3 py-1 text-sm text-white hover:bg-cyan-600"
+										on:click={() => openUpload('Lab Report')}
+									>
+										<i class="fas fa-upload"></i>
+									</button>
+								{/if}
+							</div>
 						</div>
+
 						<!-- Lab Reports -->
 						{#each labReports as item}
 							<LabReportCard {item} />
@@ -845,10 +940,22 @@
 						<div
 							class="mb-2 rounded-lg border border-cyan-200 bg-cyan-50 p-2 dark:border-cyan-700 dark:bg-cyan-950"
 						>
-							<h3 class="text-base font-semibold text-cyan-700 dark:text-cyan-300">
-								<i class="fas fa-file-invoice text-gray-700 dark:text-gray-200"></i> Lab Invoices
-							</h3>
+							<div class="flex items-center justify-between">
+								<h3 class="text-base font-semibold text-cyan-700 dark:text-cyan-300">
+									<i class="fas fa-file-invoice text-gray-700 dark:text-gray-200"></i> Lab Invoices
+								</h3>
+								{#if selectedSub === 'Lab Invoice'}
+									<button
+										aria-label="upload button"
+										class="rounded bg-cyan-500 px-3 py-1 text-sm text-white hover:bg-cyan-600"
+										on:click={() => openUpload('Lab Invoice')}
+									>
+										<i class="fas fa-upload"></i>
+									</button>
+								{/if}
+							</div>
 						</div>
+
 						<!-- Lab Invoices -->
 						{#each labInvoices as item}
 							<LabInvoiceCard {item} />
@@ -858,6 +965,15 @@
 			{/if}
 		</div>
 	{/if}
+
+	<UploadModal
+		isOpen={showUploadModal}
+		category={currentUploadCategory}
+		onClose={closeUpload}
+		onUploadComplete={(fileObject) => {
+			refreshAfterUpload(fileObject);
+		}}
+	/>
 
 	<!-- ASSISTED VIEW (ChatGPT-like) -->
 	{#if $isMobileView === 'assisted'}
@@ -1030,7 +1146,8 @@
 
 						<div class="chat-container max-h-[70vh] overflow-y-auto">
 							<!-- Chat History -->
-							{#each $chats.filter((c) => c?.id !== undefined) as chat (chat.id)}
+							<!-- {#each $chats.filter((c) => c?.id !== undefined) as chat (chat.id)} -->
+							{#each $chats.filter((c) => c?.id !== undefined) as chat, i (chat.id || `fallback-${i}`)}
 								<div
 									class="my-2 flex items-center justify-between rounded bg-white p-3 shadow-sm dark:bg-gray-700 {chat.id ===
 									$activeChatId
