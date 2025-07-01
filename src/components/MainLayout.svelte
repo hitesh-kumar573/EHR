@@ -24,8 +24,5 @@
 	});
 </script>
 
-<!-- {#if isMobile} -->
 <MobileView />
-<!-- {:else} -->
 <DesktopView />
-<!-- {/if} -->

@@ -177,11 +177,13 @@
 	class="relative min-h-screen overflow-hidden bg-gradient-to-br from-blue-100 via-white to-teal-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800"
 > -->
 <div
-	class="relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-br from-blue-100 via-white to-teal-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800"
+	class="relative flex min-h-[100dvh] flex-col overflow-hidden bg-gradient-to-br from-blue-100 via-white to-teal-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800"
 >
-	<div
-		class="z-50 mx-auto w-full bg-white/30 px-6 py-2 backdrop-blur-md dark:bg-black/10"
-	>
+	<div class="z-50 mx-auto w-full bg-white/30 px-6 py-2 backdrop-blur-md dark:bg-black/40">
+		<img src="/Carer_Logo.png" alt="Carer Logo" class="h-12 w-auto rounded-md" />
+	</div>
+
+	<div class="z-50 mx-auto w-full bg-white/30 px-6 py-2 backdrop-blur-md dark:bg-black/10">
 		<h1
 			class="animate-gradient-x bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 bg-clip-text text-center text-4xl font-extrabold text-transparent sm:text-5xl"
 		>
@@ -202,27 +204,27 @@
 
 			<i
 				class="fas fa-notes-medical animate-float2 absolute text-4xl text-blue-400 dark:text-blue-500"
-				style="top: 72%; left: 10%;"
+				style="top: 73%; left: 10%;"
 			></i>
 
 			<i
 				class="fas fa-pills animate-float2 absolute text-4xl text-cyan-400 dark:text-cyan-500"
-				style="top: 75%; left: 75%;"
+				style="top: 77%; left: 75%;"
 			></i>
 
 			<i
 				class="fas fa-file-invoice animate-float3 absolute text-4xl text-blue-400 dark:text-blue-500"
-				style="top: 28%; left: 80%;"
+				style="top: 33%; left: 80%;"
 			></i>
 
 			<i
 				class="fas fa-file-medical-alt animate-float2 absolute text-4xl text-cyan-400 dark:text-cyan-500"
-				style="top: 22%; left: 20%;"
+				style="top: 28%; left: 20%;"
 			></i>
 		</div>
 		<!-- <div class="relative w-full max-w-sm rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800"> -->
 		<div
-			class="relative z-50 mb-5 w-full max-w-sm rounded-xl bg-white/60 p-6 shadow-lg backdrop-blur-xl dark:bg-gray-800/60"
+			class="relative z-50 mb-7 w-full max-w-sm rounded-xl bg-white/60 p-6 shadow-lg backdrop-blur-xl dark:bg-gray-800/60"
 		>
 			{#if step === 2}
 				<!-- Back Arrow Button (Top Left Corner) -->
