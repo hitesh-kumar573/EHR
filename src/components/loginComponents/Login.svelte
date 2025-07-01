@@ -183,13 +183,21 @@
 		<img src="/Carer_Logo.png" alt="Carer Logo" class="h-12 w-auto rounded-md" />
 	</div>
 
-	<div class="z-50 mx-auto w-full bg-white/30 px-6 py-2 backdrop-blur-md dark:bg-black/10">
+	<div
+		class="z-50 mx-auto w-full rounded-b-xl bg-white/30 px-6 py-4 text-center shadow-md backdrop-blur-md dark:bg-black/10"
+	>
 		<h1
-			class="animate-gradient-x bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 bg-clip-text text-center text-4xl font-extrabold text-transparent sm:text-5xl"
+			class="animate-gradient-x bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 bg-clip-text text-4xl font-semibold tracking-wide text-transparent sm:text-5xl"
 		>
 			EHR
 		</h1>
+		<p
+			class="animate-gradient-x mt-2 bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 bg-clip-text text-lg font-medium text-transparent sm:text-xl"
+		>
+			Digital Health Records. Anytime, Anywhere!
+		</p>
 	</div>
+
 	<!-- 👇 Animated Background Blobs -->
 	<div
 		class="pointer-events-none absolute -top-24 -left-24 h-[500px] w-[500px] animate-pulse rounded-full bg-blue-300 opacity-30 blur-3xl dark:bg-blue-800"
