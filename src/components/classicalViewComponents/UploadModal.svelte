@@ -8,6 +8,7 @@
 	export let category = '';
 	export let onClose = () => {};
 	export let onUploadComplete = (file) => {};
+	export let isUploading = false; // passed from parent
 
 	let draggedOver = false;
 	let fileInput;
@@ -31,6 +32,10 @@
 		draggedOver = false;
 	}
 
+	$: if (!isOpen) {
+		selectedFile = null;
+	}
+
 	function validateFile(file) {
 		// const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
 		const allowedTypes = ['application/pdf'];
@@ -50,8 +55,8 @@
 				const base64 = result.split(',')[1];
 
 				onUploadComplete({ base64, file: selectedFile });
-				selectedFile = null;
-				onClose();
+				// selectedFile = null;
+				// onClose();
 			};
 			reader.readAsDataURL(selectedFile); // 👈 converts to base64
 		} else {
@@ -132,15 +137,30 @@
 				<button
 					class="w-full rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
 					on:click={handleUpload}
+					disabled={isUploading}
 				>
-					<i class="fas fa-upload"></i> Submit
+					<!-- <i class="fas fa-upload"></i> Submit -->
+					{#if isUploading}
+						<!-- <i class="fas fa-spinner fa-spin"></i> Uploading... -->
+						<div class="flex items-center justify-center gap-2">
+							<span>Uploading</span>
+							<div class="typing-dots">
+								<div class="dot"></div>
+								<div class="dot"></div>
+								<div class="dot"></div>
+							</div>
+						</div>
+					{:else}
+						<i class="fas fa-upload"></i> Submit
+					{/if}
 				</button>
 
 				<!-- Remove Button (only shown when a file is selected) -->
 				{#if selectedFile}
 					<button
-						class="w-full rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+						class="w-full rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
 						on:click={removeSelectedFile}
+						disabled={isUploading}
 					>
 						<i class="fas fa-trash-alt mr-2"></i> Remove
 					</button>
@@ -149,3 +169,55 @@
 		</div>
 	</div>
 {/if}
+
+<style>
+	.typing-dots {
+		display: flex;
+		align-items: center;
+		justify-content: start;
+		gap: 4px;
+	}
+
+	.typing-dots .dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		animation: blink 1.4s infinite both;
+	}
+
+	@media (prefers-color-scheme: light) {
+		.typing-dots .dot {
+			background-color: #333;
+		}
+	}
+	@media (prefers-color-scheme: dark) {
+		.typing-dots .dot {
+			background-color: white;
+		}
+	}
+
+	.typing-dots .dot:nth-child(1) {
+		animation-delay: 0s;
+	}
+	.typing-dots .dot:nth-child(2) {
+		animation-delay: 0.2s;
+	}
+	.typing-dots .dot:nth-child(3) {
+		animation-delay: 0.4s;
+	}
+
+	@keyframes blink {
+		0% {
+			opacity: 0.2;
+			transform: scale(1);
+		}
+		50% {
+			opacity: 1;
+			transform: scale(1.3);
+		}
+		100% {
+			opacity: 0.2;
+			transform: scale(1);
+		}
+	}
+</style>

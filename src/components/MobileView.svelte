@@ -160,13 +160,7 @@
 		const userId = localStorage.getItem('user_id');
 		// await fetchUserChats(); // Always fetch first
 
-		// const currentChats = get(chats);
-		// if (!currentChats || currentChats.length === 0) {
-		// 	initializeNewChat(); // Only if no chats exist after fetch
-		// }
-
 		const fetchedChats = await fetchUserChats(); // now you wait
-
 		console.log('fetchedChats:', fetchedChats);
 		if (!fetchedChats || fetchedChats.length === 0) {
 			initializeNewChat();
@@ -753,6 +747,7 @@
 
 	let showUploadModal = false;
 	let currentUploadCategory = '';
+	let isUploading = false; // 🆕
 
 	function openUpload(category) {
 		currentUploadCategory = category;
@@ -771,6 +766,8 @@
 			console.warn('❌ Missing category or file');
 			return;
 		}
+
+		isUploading = true; // 🟢 Start spinner
 
 		try {
 			const payload = {
@@ -791,11 +788,14 @@
 			if (response.ok) {
 				console.log('Upload success:', result);
 				await fetchCategoryData(selectedSub); // Refresh data from backend
+				closeUpload(); // ✅ Close after success
 			} else {
 				console.error('Upload failed:', result);
 			}
 		} catch (err) {
 			console.error('Upload error:', err);
+		} finally {
+			isUploading = false; // 🔴 Stop spinner
 		}
 	}
 </script>
@@ -977,6 +977,7 @@
 		onUploadComplete={(fileObject) => {
 			refreshAfterUpload(fileObject);
 		}}
+		{isUploading}
 	/>
 
 	<!-- ASSISTED VIEW (ChatGPT-like) -->
@@ -1152,7 +1153,7 @@
 							<!-- Chat History -->
 							{#if $chats.length > 0}
 								{#each $chats as chat (chat.id)}
-								<!-- {#each $chats as chat, i (chat.id ? `chat-${chat.id}` : `fallback-${i}`)} -->
+									<!-- {#each $chats as chat, i (chat.id ? `chat-${chat.id}` : `fallback-${i}`)} -->
 									<div
 										class="my-2 flex items-center justify-between rounded bg-white p-3 shadow-sm dark:bg-gray-700 {chat.id ===
 										$activeChatId

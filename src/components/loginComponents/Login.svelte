@@ -260,7 +260,16 @@
 						disabled={isSendingOtp}
 					>
 						{#if isSendingOtp}
-							<span class="loader mr-2"></span> Sending...
+							<!-- <span class="loader mr-2"></span> Sending... -->
+							<!-- <i class="fas fa-spinner fa-spin"></i> Sending... -->
+							<div class="flex items-center justify-center gap-2">
+								<span>Sending</span>
+								<div class="typing-dots">
+									<div class="dot"></div>
+									<div class="dot"></div>
+									<div class="dot"></div>
+								</div>
+							</div>
 						{:else}
 							Send OTP
 						{/if}
@@ -295,7 +304,16 @@
 						disabled={isVerifyingOtp}
 					>
 						{#if isVerifyingOtp}
-							<span class="loader mr-2"></span> Verifying...
+							<!-- <span class="loader mr-2"></span> Verifying... -->
+							<!-- <i class="fas fa-spinner fa-spin"></i> Verifying... -->
+							<div class="flex items-center justify-center gap-2">
+								<span>Verifying</span>
+								<div class="typing-dots">
+									<div class="dot"></div>
+									<div class="dot"></div>
+									<div class="dot"></div>
+								</div>
+							</div>
 						{:else}
 							Verify OTP
 						{/if}
@@ -307,6 +325,56 @@
 </div>
 
 <style>
+	.typing-dots {
+		display: flex;
+		align-items: center;
+		justify-content: start;
+		gap: 4px;
+	}
+
+	.typing-dots .dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		animation: blink 1.4s infinite both;
+	}
+
+	@media (prefers-color-scheme: light) {
+		.typing-dots .dot {
+			background-color: #333;
+		}
+	}
+	@media (prefers-color-scheme: dark) {
+		.typing-dots .dot {
+			background-color: white;
+		}
+	}
+
+	.typing-dots .dot:nth-child(1) {
+		animation-delay: 0s;
+	}
+	.typing-dots .dot:nth-child(2) {
+		animation-delay: 0.2s;
+	}
+	.typing-dots .dot:nth-child(3) {
+		animation-delay: 0.4s;
+	}
+
+	@keyframes blink {
+		0% {
+			opacity: 0.2;
+			transform: scale(1);
+		}
+		50% {
+			opacity: 1;
+			transform: scale(1.3);
+		}
+		100% {
+			opacity: 0.2;
+			transform: scale(1);
+		}
+	}
+
 	.loader {
 		border: 3px solid #f3f3f3;
 		border-top: 3px solid #3498db;
