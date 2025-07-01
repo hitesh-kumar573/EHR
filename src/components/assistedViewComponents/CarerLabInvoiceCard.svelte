@@ -51,10 +51,24 @@
 				</p>
 			{/if}
 
-			{#if item.data?.invoice_link}
+			{#if item.tax_amount > 0}
+				<p class="flex items-center justify-between">
+					<span class="w-[140px] font-bold">• Tax:</span>
+					<span class="text-right">{item.tax_amount}</span>
+				</p>
+			{/if}
+
+			{#if item.discount > 0}
+				<p class="flex items-center justify-between">
+					<span class="w-[140px] font-bold">• Discount:</span>
+					<span class="text-right">{item.discount}</span>
+				</p>
+			{/if}
+
+			{#if item.billing_link}
 				<div class="mt-3 flex justify-end">
 					<a
-						href={item.data?.invoice_link}
+						href={item.billing_link}
 						rel="noopener noreferrer"
 						class="inline-block rounded bg-cyan-500 px-4 py-0.5 text-lg font-semibold text-white transition-colors hover:bg-cyan-600"
 					>

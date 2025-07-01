@@ -32,7 +32,8 @@
 	}
 
 	function validateFile(file) {
-		const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+		// const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+		const allowedTypes = ['application/pdf'];
 		return allowedTypes.includes(file.type);
 	}
 
@@ -120,7 +121,7 @@
 			<!-- Hidden file input -->
 			<input
 				type="file"
-				accept=".pdf,image/*"
+				accept=".pdf*"
 				bind:this={fileInput}
 				on:change={handleManualSelect}
 				class="hidden"

@@ -224,6 +224,8 @@
 					messages: [] // You can fetch specific chat messages later if needed
 				}));
 
+			console.log('formattedChats:', formattedChats);
+
 			chats.set(formattedChats);
 
 			console.log('chats:', $chats);
@@ -235,6 +237,8 @@
 			// }
 		} catch (error) {
 			console.error('Error fetching user chats:', error);
+			chats.set([]);
+			return []; // 👈 ensure return type is always consistent
 		}
 	}
 
@@ -770,13 +774,13 @@
 
 		try {
 			const payload = {
-				base64: fileObject.base64,
+				doc_base64: fileObject.base64,
 				category: currentUploadCategory,
 				phone
 			};
 
 			console.log('payload:', payload);
-			await fetch(`${baseUrl}/upload_base64`, {
+			let response = await fetch(`${baseUrl}/upload_medical_document`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(payload)
@@ -785,13 +789,13 @@
 			const result = await response.json();
 
 			if (response.ok) {
-				console.log('✅ Upload success:', result);
-				await fetchCategoryData(currentUploadCategory); // Refresh data from backend
+				console.log('Upload success:', result);
+				await fetchCategoryData(selectedSub); // Refresh data from backend
 			} else {
-				console.error('❌ Upload failed:', result);
+				console.error('Upload failed:', result);
 			}
 		} catch (err) {
-			console.error('🚨 Upload error:', err);
+			console.error('Upload error:', err);
 		}
 	}
 </script>
@@ -1146,116 +1150,122 @@
 
 						<div class="chat-container max-h-[70vh] overflow-y-auto">
 							<!-- Chat History -->
-							<!-- {#each $chats.filter((c) => c?.id !== undefined) as chat (chat.id)} -->
-							{#each $chats.filter((c) => c?.id !== undefined) as chat, i (chat.id || `fallback-${i}`)}
-								<div
-									class="my-2 flex items-center justify-between rounded bg-white p-3 shadow-sm dark:bg-gray-700 {chat.id ===
-									$activeChatId
-										? 'border-l-4 border-blue-500'
-										: ''}"
-								>
-									<button
-										on:click={() => {
-											selectChat(chat.id);
-											showMobileDrawer.set(false);
-										}}
-										class="flex-1 truncate text-left text-gray-700 dark:text-white"
+							{#if $chats.length > 0}
+								{#each $chats as chat (chat.id)}
+								<!-- {#each $chats as chat, i (chat.id ? `chat-${chat.id}` : `fallback-${i}`)} -->
+									<div
+										class="my-2 flex items-center justify-between rounded bg-white p-3 shadow-sm dark:bg-gray-700 {chat.id ===
+										$activeChatId
+											? 'border-l-4 border-blue-500'
+											: ''}"
 									>
-										{chat.title}
-									</button>
-
-									<!-- 3-dots menu -->
-									<div class="relative z-10 ml-2">
 										<button
-											aria-label="chat action button"
-											on:click={(e) => {
-												const btn = e.currentTarget;
-												const rect = btn.getBoundingClientRect();
-												const container = btn.closest('.chat-container');
-												if (!container) return;
-												const containerRect = container.getBoundingClientRect();
-
-												const spaceBelow = containerRect.bottom - rect.bottom;
-												const spaceAbove = rect.top - containerRect.top;
-
-												dropdownPosition =
-													spaceBelow < 100 && spaceAbove > spaceBelow ? 'top' : 'bottom';
-												menuChatId = menuChatId === chat.id ? null : chat.id;
+											on:click={() => {
+												selectChat(chat.id);
+												showMobileDrawer.set(false);
 											}}
-											class="text-gray-600 hover:text-gray-800 dark:text-white"
+											class="flex-1 truncate text-left text-gray-700 dark:text-white"
 										>
-											<i class="fas fa-ellipsis-v"></i>
+											{chat.title}
 										</button>
 
-										<!-- Dropdown -->
-										{#if menuChatId === chat.id}
-											<div
-												class={`absolute z-30 flex w-fit items-center justify-between gap-2 rounded-md bg-white px-2 py-1 shadow-lg dark:bg-gray-800 ${
-													$user.phone
-														? dropdownPosition === 'top'
-															? 'bottom-0'
-															: 'top-0'
-														: dropdownPosition === 'top'
-															? 'bottom-0'
-															: '-top-2'
-												} right-3`}
+										<!-- 3-dots menu -->
+										<div class="relative z-10 ml-2">
+											<button
+												aria-label="chat action button"
+												on:click={(e) => {
+													const btn = e.currentTarget;
+													const rect = btn.getBoundingClientRect();
+													const container = btn.closest('.chat-container');
+													if (!container) return;
+													const containerRect = container.getBoundingClientRect();
+
+													const spaceBelow = containerRect.bottom - rect.bottom;
+													const spaceAbove = rect.top - containerRect.top;
+
+													dropdownPosition =
+														spaceBelow < 100 && spaceAbove > spaceBelow ? 'top' : 'bottom';
+													menuChatId = menuChatId === chat.id ? null : chat.id;
+												}}
+												class="text-gray-600 hover:text-gray-800 dark:text-white"
 											>
-												{#if $user.phone}
-													<!-- Rename -->
+												<i class="fas fa-ellipsis-v"></i>
+											</button>
+
+											<!-- Dropdown -->
+											{#if menuChatId === chat.id}
+												<div
+													class={`absolute z-30 flex w-fit items-center justify-between gap-2 rounded-md bg-white px-2 py-1 shadow-lg dark:bg-gray-800 ${
+														$user.phone
+															? dropdownPosition === 'top'
+																? 'bottom-0'
+																: 'top-0'
+															: dropdownPosition === 'top'
+																? 'bottom-0'
+																: '-top-2'
+													} right-3`}
+												>
+													{#if $user.phone}
+														<!-- Rename -->
+														<button
+															aria-label="rename button"
+															class="my-1 block w-full rounded-md border border-gray-200 px-3 py-1 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+															on:click={() => {
+																renamingChatId = chat.id;
+																newTitle = chat.title;
+																menuChatId = null;
+															}}
+														>
+															<i class="fas fa-edit"></i>
+														</button>
+													{/if}
+													<!-- Delete -->
 													<button
-														aria-label="rename button"
-														class="my-1 block w-full rounded-md border border-gray-200 px-3 py-1 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+														aria-label="delete button"
+														class="block w-full rounded-md border border-gray-200 px-3 py-1 text-left text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700"
 														on:click={() => {
-															renamingChatId = chat.id;
-															newTitle = chat.title;
+															deleteChat(chat.id);
 															menuChatId = null;
 														}}
 													>
-														<i class="fas fa-edit"></i>
+														<i class="fas fa-trash-alt"></i>
 													</button>
-												{/if}
-												<!-- Delete -->
-												<button
-													aria-label="delete button"
-													class="block w-full rounded-md border border-gray-200 px-3 py-1 text-left text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700"
-													on:click={() => {
-														deleteChat(chat.id);
-														menuChatId = null;
-													}}
-												>
-													<i class="fas fa-trash-alt"></i>
-												</button>
-											</div>
-										{/if}
+												</div>
+											{/if}
+										</div>
 									</div>
-								</div>
-								<!-- Rename input UI below the chat item -->
-								{#if renamingChatId === chat.id}
-									<div class="mt-1 flex items-center gap-2 px-2">
-										<input
-											type="text"
-											bind:value={newTitle}
-											class="w-full rounded border px-2 py-1 text-sm text-gray-800 dark:bg-gray-900 dark:text-white"
-											placeholder="Enter new title"
-										/>
-										<button
-											class="rounded bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
-											on:click={async () => {
-												await updateChatTitle(chat.id, newTitle);
-												renamingChatId = null;
-											}}
-										>
-											Save
-										</button>
-										<button
-											class="rounded bg-gray-300 px-2 py-1 text-sm hover:bg-gray-400 dark:bg-gray-700 dark:text-white"
-											on:click={() => (renamingChatId = null)}
-										>
-											Cancel
-										</button>
-									</div>
-								{/if}
-							{/each}
+									<!-- Rename input UI below the chat item -->
+									{#if renamingChatId === chat.id}
+										<div class="mt-1 flex items-center gap-2 px-2">
+											<input
+												type="text"
+												bind:value={newTitle}
+												class="w-full rounded border px-2 py-1 text-sm text-gray-800 dark:bg-gray-900 dark:text-white"
+												placeholder="Enter new title"
+											/>
+											<button
+												class="rounded bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+												on:click={async () => {
+													await updateChatTitle(chat.id, newTitle);
+													renamingChatId = null;
+												}}
+											>
+												Save
+											</button>
+											<button
+												class="rounded bg-gray-300 px-2 py-1 text-sm hover:bg-gray-400 dark:bg-gray-700 dark:text-white"
+												on:click={() => (renamingChatId = null)}
+											>
+												Cancel
+											</button>
+										</div>
+									{/if}
+								{/each}
+							{:else}
+								<p class="px-4 text-gray-500 dark:text-gray-300">
+									Loading chats or no chats available.
+								</p>
+							{/if}
 						</div>
 					</div>
 				{:else}

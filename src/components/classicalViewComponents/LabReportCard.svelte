@@ -51,22 +51,30 @@
 </script>
 
 <div class="mb-4 rounded-lg bg-cyan-100 p-3 text-gray-800 shadow-sm dark:bg-cyan-200">
-	<p class="flex items-center justify-between">
-		<span class="w-[130px] font-bold">• Report No:</span>
-		<span class="text-right">{item.data?.report_number}</span>
-	</p>
-	<p class="flex items-center justify-between">
-		<span class="w-[130px] font-bold">• Lab:</span>
-		<span class="text-right">{item.data?.lab_name}</span>
-	</p>
-	<p class="flex items-center justify-between">
-		<span class="w-[130px] font-bold">• Referral:</span>
-		<span class="text-right">{item.data?.referral_doctor_name}</span>
-	</p>
-	<p class="flex items-center justify-between">
-		<span class="w-[130px] font-bold">• Date:</span>
-		<span class="text-right">{getValidDate(item.data)}</span>
-	</p>
+	{#if item.data?.report_number}
+		<p class="flex items-center justify-between">
+			<span class="w-[130px] font-bold">• Report No:</span>
+			<span class="text-right">{item.data?.report_number}</span>
+		</p>
+	{/if}
+	{#if item.data?.lab_name}
+		<p class="flex items-center justify-between">
+			<span class="w-[130px] font-bold">• Lab:</span>
+			<span class="text-right">{item.data?.lab_name}</span>
+		</p>
+	{/if}
+	{#if item.data?.referral_doctor_name}
+		<p class="flex items-center justify-between">
+			<span class="w-[130px] font-bold">• Referral:</span>
+			<span class="text-right">{item.data?.referral_doctor_name}</span>
+		</p>
+	{/if}
+	{#if item.data}
+		<p class="flex items-center justify-between">
+			<span class="w-[130px] font-bold">• Date:</span>
+			<span class="text-right">{getValidDate(item.data)}</span>
+		</p>
+	{/if}
 
 	<!-- Parameters Section -->
 	<!-- {#if normalParams?.length > 0}

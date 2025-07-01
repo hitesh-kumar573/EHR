@@ -31,32 +31,31 @@
 </script>
 
 <div class="mb-3 rounded-lg bg-blue-100 p-3 text-gray-800 shadow-sm dark:bg-blue-200">
-	<p class="flex items-center justify-between">
-		<span class="w-[120px] font-bold">• Rx Title:</span>
-		<span class="text-right">Prescription</span>
-	</p>
+	{#if item.data?.doctor_name}
+		<p class="flex items-center justify-between">
+			<span class="w-[120px] font-bold">• Doctor:</span>
+			<span class="text-right">{item.data?.doctor_name}</span>
+		</p>
+	{/if}
 
-	<p class="flex items-center justify-between">
-		<span class="w-[120px] font-bold">• Doctor:</span>
-		<span class="text-right">{item.data?.doctor_name}</span>
-	</p>
-
-	<p class="flex items-center justify-between">
-		<span class="w-[120px] font-bold">• Date:</span>
-		<span class="text-right">{getValidDate(item.data)}</span>
-	</p>
-
-	<div class="flex flex-col items-start justify-between">
-		<span class="w-[120px] pt-1 font-bold">• Instructions:</span>
-		<div class="ml-4 w-[80vw] text-right">
-			<ul class="inline-block text-left">
-				{#each item.data?.medicine_list as med}
-					<li>• {med}</li>
-				{/each}
-			</ul>
+	{#if item.data}
+		<p class="flex items-center justify-between">
+			<span class="w-[120px] font-bold">• Date:</span>
+			<span class="text-right">{getValidDate(item.data)}</span>
+		</p>
+	{/if}
+	{#if item.data?.medicine_list}
+		<div class="flex flex-col items-start justify-between">
+			<span class="w-[120px] pt-1 font-bold">• Instructions:</span>
+			<div class="ml-4 w-[80vw] text-right">
+				<ul class="inline-block text-left">
+					{#each item.data?.medicine_list as med}
+						<li>• {med}</li>
+					{/each}
+				</ul>
+			</div>
 		</div>
-	</div>
-
+	{/if}
 	{#if item.data?.prescription_link}
 		<div class="mt-2 flex justify-end">
 			<a
@@ -65,8 +64,7 @@
 				class="inline-block rounded bg-blue-500 px-4 py-0.5 text-lg font-semibold text-white transition-colors hover:bg-blue-600"
 			>
 				<!-- View Prescription -->
-				 <i class="fas fa-notes-medical text-gray-700 dark:text-gray-200"></i>
-
+				<i class="fas fa-notes-medical text-gray-700 dark:text-gray-200"></i>
 			</a>
 		</div>
 	{/if}

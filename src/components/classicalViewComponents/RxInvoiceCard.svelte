@@ -31,28 +31,38 @@
 </script>
 
 <div class="mb-4 rounded-lg bg-blue-100 p-3 text-gray-800 shadow-sm dark:bg-blue-200">
-	<p class="flex justify-between">
-		<span class="w-[120px] font-bold">• Rx Invoice:</span>
-		<span class="w-[48vw] truncate overflow-hidden text-right whitespace-nowrap">
-			{item.data?.invoice_number}
-		</span>
-	</p>
-	<p class="flex items-center justify-between">
-		<span class="w-[120px] font-bold">• Pharmacy:</span>
-		<span class="text-right">{item.data?.pharmacy_store}</span>
-	</p>
-	<p class="flex items-center justify-between">
-		<span class="w-[120px] font-bold">• Amount:</span>
-		<span class="text-end">₹{item.data?.invoice_amount}</span>
-	</p>
-	<p class="flex items-center justify-between">
-		<span class="w-[120px] font-bold">• Date:</span>
-		<span class="text-right">{getValidDate(item.data)}</span>
-	</p>
-	<p class="flex h-auto justify-between pt-1">
-		<span class="w-[120px] font-bold">• Medicines:</span>
-		<span class="w-[80vw] text-right">({item.data?.medicine_name_array?.join(', ')})</span>
-	</p>
+	{#if item.data?.invoice_number}
+		<p class="flex justify-between">
+			<span class="w-[120px] font-bold">• Rx Invoice:</span>
+			<span class="w-[48vw] truncate overflow-hidden text-right whitespace-nowrap">
+				{item.data?.invoice_number}
+			</span>
+		</p>
+	{/if}
+	{#if item.data?.pharmacy_store}
+		<p class="flex items-center justify-between">
+			<span class="w-[120px] font-bold">• Pharmacy:</span>
+			<span class="text-right">{item.data?.pharmacy_store}</span>
+		</p>
+	{/if}
+	{#if item.data?.invoice_amount}
+		<p class="flex items-center justify-between">
+			<span class="w-[120px] font-bold">• Amount:</span>
+			<span class="text-end">₹{item.data?.invoice_amount}</span>
+		</p>
+	{/if}
+	{#if item.data}
+		<p class="flex items-center justify-between">
+			<span class="w-[120px] font-bold">• Date:</span>
+			<span class="text-right">{getValidDate(item.data)}</span>
+		</p>
+	{/if}
+	{#if item.data?.medicine_name_array}
+		<p class="flex h-auto justify-between pt-1">
+			<span class="w-[120px] font-bold">• Medicines:</span>
+			<span class="w-[80vw] text-right">({item.data?.medicine_name_array?.join(', ')})</span>
+		</p>
+	{/if}
 	{#if item?.data?.invoice_link}
 		<div class="mt-2 flex justify-end">
 			<a

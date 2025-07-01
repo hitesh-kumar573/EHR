@@ -31,27 +31,37 @@
 </script>
 
 <div class="mb-3 rounded-lg bg-cyan-100 p-3 text-gray-800 shadow-sm dark:bg-cyan-200">
-	<p class="flex items-center justify-between">
-		<span class="w-[130px] font-bold">• Invoice No:</span>
-		<span class="text-right">{item.data?.invoice_number}</span>
-	</p>
-	<p class="flex items-center justify-between">
-		<span class="w-[130px] font-bold">• Lab:</span>
-		<span class="text-right">{item.data?.lab_name}</span>
-	</p>
-	<p class="flex items-center justify-between">
-		<span class="w-[130px] font-bold">• Amount:</span>
-		<span class="text-right">₹{item.data?.invoice_amount}</span>
-	</p>
-	<p class="flex items-center justify-between">
-		<span class="w-[130px] font-bold">• Date:</span>
-		<span class="text-right">{getValidDate(item.data)}</span>
-	</p>
+	{#if item.data?.invoice_number}
+		<p class="flex items-center justify-between">
+			<span class="w-[130px] font-bold">• Invoice No:</span>
+			<span class="text-right">{item.data?.invoice_number}</span>
+		</p>
+	{/if}
+	{#if item.data?.lab_name}
+		<p class="flex items-center justify-between">
+			<span class="w-[130px] font-bold">• Lab:</span>
+			<span class="text-right">{item.data?.lab_name}</span>
+		</p>
+	{/if}
+	{#if item.data?.invoice_amount}
+		<p class="flex items-center justify-between">
+			<span class="w-[130px] font-bold">• Amount:</span>
+			<span class="text-right">₹{item.data?.invoice_amount}</span>
+		</p>
+	{/if}
+	{#if item.data}
+		<p class="flex items-center justify-between">
+			<span class="w-[130px] font-bold">• Date:</span>
+			<span class="text-right">{getValidDate(item.data)}</span>
+		</p>
+	{/if}
 
-	<p class="flex items-start justify-between">
-		<span class="w-[130px] font-bold">• Tests:</span>
-		<span class="w-[80vw] text-right">({item.data?.test_names?.join(', ')})</span>
-	</p>
+	{#if item.data?.test_names}
+		<p class="flex items-start justify-between">
+			<span class="w-[130px] font-bold">• Tests:</span>
+			<span class="w-[80vw] text-right">({item.data?.test_names?.join(', ')})</span>
+		</p>
+	{/if}
 
 	{#if item.data?.invoice_link}
 		<div class="mt-3 flex justify-end">
