@@ -184,7 +184,7 @@
 	</div>
 
 	<div
-		class="z-50 mx-auto w-full rounded-b-xl bg-white/30 px-6 py-4 text-center shadow-md backdrop-blur-md dark:bg-black/10"
+		class="z-50 mx-auto w-full rounded-b-xl bg-white/30 px-6 py-3 text-center shadow-md backdrop-blur-md dark:bg-black/10"
 	>
 		<h1
 			class="animate-gradient-x bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 bg-clip-text text-4xl font-semibold tracking-wide text-transparent sm:text-5xl"
@@ -192,7 +192,7 @@
 			EHR
 		</h1>
 		<p
-			class="animate-gradient-x mt-2 bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 bg-clip-text text-lg font-medium text-transparent sm:text-xl"
+			class="animate-gradient-x mt-2 bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 bg-clip-text font-medium text-transparent sm:text-xl"
 		>
 			Digital Health Records. Anytime, Anywhere!
 		</p>
@@ -212,7 +212,7 @@
 
 			<i
 				class="fas fa-notes-medical animate-float2 absolute text-4xl text-blue-400 dark:text-blue-500"
-				style="top: 73%; left: 10%;"
+				style="top: 75%; left: 10%;"
 			></i>
 
 			<i
@@ -232,7 +232,7 @@
 		</div>
 		<!-- <div class="relative w-full max-w-sm rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800"> -->
 		<div
-			class="relative z-50 mb-7 w-full max-w-sm rounded-xl bg-white/60 p-6 shadow-lg backdrop-blur-xl dark:bg-gray-800/60"
+			class="relative z-50 mb-12 w-full max-w-sm rounded-xl bg-white/60 p-6 shadow-lg backdrop-blur-xl dark:bg-gray-800/60"
 		>
 			{#if step === 2}
 				<!-- Back Arrow Button (Top Left Corner) -->

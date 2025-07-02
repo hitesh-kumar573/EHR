@@ -144,6 +144,35 @@
 			if (res.ok) {
 				console.log('✅ Fetched EHR data:', data);
 
+				// ✅ Only sort if the arrays exist
+				if (Array.isArray(data.rxInvoices)) {
+					data.rxInvoices = [
+						...data.rxInvoices.filter((i) => i.uploaded),
+						...data.rxInvoices.filter((i) => !i.uploaded)
+					];
+				}
+
+				if (Array.isArray(data.rxPrescriptions)) {
+					data.rxPrescriptions = [
+						...data.rxPrescriptions.filter((i) => i.uploaded),
+						...data.rxPrescriptions.filter((i) => !i.uploaded)
+					];
+				}
+
+				if (Array.isArray(data.labReports)) {
+					data.labReports = [
+						...data.labReports.filter((i) => i.uploaded),
+						...data.labReports.filter((i) => !i.uploaded)
+					];
+				}
+
+				if (Array.isArray(data.labInvoices)) {
+					data.labInvoices = [
+						...data.labInvoices.filter((i) => i.uploaded),
+						...data.labInvoices.filter((i) => !i.uploaded)
+					];
+				}
+
 				// Optional: Filter or transform data if needed before storing
 				ehrData.set(data); // Assuming `ehrData` is a writable store
 
@@ -727,7 +756,7 @@
 			console.log('raw data:', data);
 
 			if (res.ok) {
-				const typedData = data.map((entry) => {
+				let normalized = data.map((entry) => {
 					if (entry.type && entry.data) return entry;
 					return {
 						type: category.replace(/\s/g, '_'),
@@ -735,8 +764,16 @@
 					};
 				});
 
-				ehrData.set(typedData);
-				console.log('✅ Normalized category data:', typedData);
+				// ✅ Bring uploaded ones first
+				if (Array.isArray(normalized)) {
+					normalized = [
+						...normalized.filter((item) => item.data?.uploaded),
+						...normalized.filter((item) => !item.data?.uploaded)
+					];
+				}
+				
+				ehrData.set(normalized);
+				console.log('✅ normalized category data:', normalized);
 			} else {
 				console.error('❌ Error fetching EHR data:', data);
 			}
