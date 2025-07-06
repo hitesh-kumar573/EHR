@@ -8,22 +8,39 @@
 
 	let chartCanvas;
 	let trend = '';
+	let dateRange = ''; // For chart heading on the right
 
 	onMount(() => {
 		if (!data || !data.length) return;
 
-		const item = data[0]; // For now we assume one test
+		const item = data[0];
+		const unit = item.result_unit?.[0] || 'UOM';
 
-		// Step 1: Combine both into array of objects
+		const sortedDates = [...item.report_result_date].sort((a, b) => new Date(a) - new Date(b));
+
+		const startDate = new Date(sortedDates[0]);
+		const endDate = new Date(sortedDates[sortedDates.length - 1]);
+
+		const formatMonthYear = (date) =>
+			date.toLocaleDateString('en-GB', {
+				month: 'short', // or 'short' if you want Apr instead of April
+				year: 'numeric'
+			});
+
+		dateRange = `${formatMonthYear(startDate)} - ${formatMonthYear(endDate)}`;
+
 		const combined = item.report_result_date.map((date, i) => ({
-			date,
+			date: new Date(date).toLocaleDateString('en-GB', {
+				day: '2-digit',
+				month: 'short'
+			}), // formatted like "12 Apr"
 			value: item.result_value[i]
 		}));
 
-		// Step 2: Sort by date
+		console.log('data combined:', combined);
+
 		combined.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-		// Step 3: Calculate trend
 		const first = combined[0].value;
 		const last = combined[combined.length - 1].value;
 		const diff = last - first;
@@ -38,6 +55,7 @@
 				break;
 			}
 		}
+
 		trend = hasFluctuation
 			? '📈 Fluctuated'
 			: diff > 0
@@ -46,29 +64,51 @@
 					? '⬇️ Decreased'
 					: '⏸️ Stable';
 
-		console.log(trend); // optional
+		console.log(trend);
 
 		const chart = new Chart(chartCanvas, {
-			type: 'line',
+			type: 'bar', //  Changed from 'line' to 'bar'
 			data: {
-				labels: item.report_result_date,
+				// labels: item.report_result_date,
+				labels: combined.map((d) => d.date),
 				datasets: [
 					{
-						label: item.test_parameter_name,
-						data: item.result_value,
-						backgroundColor: 'rgba(6, 182, 212, 0.4)', // cyan
-						borderColor: 'rgba(6, 182, 212, 1)', // cyan
-						borderWidth: 2,
-						tension: 0.3,
-						fill: false
+						label: `${item.test_parameter_name} (${unit})`, // show UOM in label
+						// data: item.result_value,
+						data: combined.map((d) => d.value),
+						backgroundColor: 'rgba(6, 182, 212, 0.7)',
+						borderColor: 'rgba(6, 182, 212, 1)',
+						borderWidth: 1
 					}
 				]
 			},
 			options: {
 				responsive: true,
+				maintainAspectRatio: false,
 				scales: {
 					y: {
-						beginAtZero: true
+						beginAtZero: true,
+						title: {
+							display: true,
+							text: `Unit (${unit})`, // Vertical label
+							font: { size: 14 }
+						}
+					},
+					x: {
+						ticks: {
+							autoSkip: true,
+							maxTicksLimit: 5,
+							// maxRotation: 45,
+							// minRotation: 45,
+							font: {
+								size: 10 // Chhota font size
+							}
+						},
+						title: {
+							display: true,
+							text: 'Test Dates',
+							font: { size: 14 }
+						}
 					}
 				},
 				plugins: {
@@ -76,21 +116,29 @@
 						display: true,
 						text: `Test: ${item.test_parameter_name}`,
 						font: { size: 16 }
+					},
+					tooltip: {
+						callbacks: {
+							label: (context) => `${context.parsed.y} ${unit}`
+						}
 					}
 				}
 			}
 		});
 
-		return () => chart.destroy(); // cleanup
+		return () => chart.destroy();
 	});
 </script>
 
-<div class="my-4 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-	<h2 class="mb-2 text-lg font-semibold text-gray-800 dark:text-white">📊 Lab Test Chart</h2>
-	<canvas bind:this={chartCanvas}></canvas>
+<div class="my-4 min-h-[300px] rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+	<h2
+		class="mb-2 flex items-center justify-between text-lg font-semibold text-gray-800 dark:text-white"
+	>
+		<span>📊 Lab Test Chart:</span>
+		<span class="text-xs font-normal text-gray-600 dark:text-gray-300">({dateRange})</span>
+	</h2>
 
-	<!-- Trend below chart -->
-	<!-- <div class="mt-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-		Result Trend: <span class="font-semibold">{trend}</span>
-	</div> -->
+	<div class="h-[300px]">
+		<canvas bind:this={chartCanvas} class="h-full w-full"></canvas>
+	</div>
 </div>
