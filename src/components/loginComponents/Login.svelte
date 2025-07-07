@@ -25,6 +25,34 @@
 		setTimeout(() => failedNotificationVisible.set(false), 4000);
 	}
 
+	function logout() {
+		let userId = localStorage.getItem('user_id');
+		console.log('Logging out user with ID:', userId);
+
+		if (userId) {
+			localStorage.removeItem('user_id');
+			localStorage.removeItem(`user_age-${userId}`);
+			localStorage.removeItem(`user_phone-${userId}`);
+
+			localStorage.removeItem(`user_gender-${userId}`);
+			localStorage.removeItem(`user_address-${userId}`);
+
+			localStorage.removeItem(`last_active_chat_id-${userId}`);
+		}
+
+		user.set({
+			id: null,
+			name: null,
+			phone: null,
+			age: null,
+			gender: null,
+			address: null,
+			email: null,
+			token: null
+		});
+		goto('/');
+	}
+
 	async function sendOtp() {
 		isSendingOtp = true;
 		console.log('phone:', phone);
@@ -141,6 +169,15 @@
 
 					// 🧹 Clean up temp user
 					localStorage.removeItem('temp_user_data');
+
+					// Auto logout after 24 hours
+					setTimeout(
+						() => {
+							logout();
+							console.log(`Auto-logged out after 1 day i.e.:- ${24 * 60 * 60 * 1000}`);
+						},
+						24 * 60 * 60 * 1000
+					);
 
 					goto('/home');
 				} else {
